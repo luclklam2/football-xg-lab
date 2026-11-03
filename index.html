@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-Hant">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Football xG Lab</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f0f3ed;color:#173228;font:1rem/1.6 system-ui,sans-serif}header{background:#173228;color:#fff;padding:2rem max(1rem,calc((100% - 65rem)/2))}h1,h2{line-height:1.2}header p{margin-bottom:0}main{max-width:67rem;margin:auto;padding:1rem}section{background:white;border:1px solid #cbd8cf;padding:1rem;margin-bottom:1rem}fieldset{min-width:0;border:1px solid #cbd8cf;margin:0;padding:.75rem}label{display:block;margin:.5rem 0}input,select,button{font:inherit;padding:.45rem;max-width:100%;border:1px solid #667e72;border-radius:.25rem}input:not([type=file]),select{display:block;width:100%}button{background:#173228;color:white;cursor:pointer;margin:.75rem .5rem 0 0}a{color:#175c44}.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr))}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#eaf1eb;padding:1rem}code{overflow-wrap:anywhere}
+</style>
+<header><small>賽前分析工作台 / v1.0</small><h1>Football xG Lab</h1><p>主客 xG、比分分布、指定盤口同歷史回測。</p></header>
+<main>
+<section><h2>01　單場分析</h2>
+<p>用同一來源同統計口徑，填主場及作客場均數據。時間以香港時間輸入。</p>
+<form id="match">
+<div class="grid">
+<fieldset><legend>主隊 · 主場</legend>
+<label>場均 xG<input name="hx" type="number" min="0" max="10" step="any" required></label>
+<label>場均 xGA<input name="ha" type="number" min="0" max="10" step="any" required></label>
+<label>樣本場數<input name="hn" type="number" min="1" required></label></fieldset>
+<fieldset><legend>客隊 · 作客</legend>
+<label>場均 xG<input name="ax" type="number" min="0" max="10" step="any" required></label>
+<label>場均 xGA<input name="aa" type="number" min="0" max="10" step="any" required></label>
+<label>樣本場數<input name="an" type="number" min="1" required></label></fieldset>
+<fieldset><legend>資料記錄</legend>
+<label>來源及統計期間<input name="source" required></label>
+<label>資料截數<input name="cutoff" type="datetime-local" required></label>
+<label>開波<input name="kickoff" type="datetime-local" required></label></fieldset>
+</div>
+<fieldset><legend>盤口試算 · 選填</legend>
+<div class="grid">
+<label>市場<select name="market"><option value="over">總入球大</option><option value="under">總入球細</option><option value="home">主隊亞洲讓球</option><option value="away">客隊亞洲讓球</option></select></label>
+<label>盤線（讓球填帶正負號數值）<input name="line" type="number" min="-10" max="10" step=".25"></label>
+<label>十進制賠率<input name="odds" type="number" min="1.01" step="any"></label>
+<label>報價時間<input name="quoted" type="datetime-local"></label>
+</div></fieldset>
+<button>計算機率</button><button type="button" id="demo">載入模擬例子</button>
+</form><pre id="result" aria-live="polite">輸入賽前數據後計算。</pre></section>
+<section><h2>02　CSV 歷史回測</h2>
+<p>同一批賽事比較得失球 Poisson 同 xG Poisson。Brier score 越低越好。CSV 時間必須帶時區，樣本欄位必須由賽前快照整理。</p>
+<p><a href="sample.csv" download>下載 CSV 格式及模擬樣本</a></p>
+<form id="backtest"><label>選擇 CSV<input id="csv" type="file" accept=".csv,text/csv" required></label><button>比較模型</button></form>
+<pre id="report" aria-live="polite">上載 CSV 後顯示主和客及大 2.5 嘅 Brier score。</pre></section>
+</main>
+<script type="module" src="app.mjs"></script>
+</html>
