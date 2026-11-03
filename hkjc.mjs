@@ -13,6 +13,54 @@ const refresh = document.querySelector('#refresh');
 const status = document.querySelector('#feed-status');
 const match = document.querySelector('#match');
 let matches = new Map(), quotes = [];
+let snapshots = new Map();
+const xgStatus = document.querySelector('#xg-status');
+const fields = ['hx', 'ha', 'ax', 'aa', 'hn', 'an', 'source', 'cutoff'];
+const key = (code, kickoff) => code + '|' + Date.parse(kickoff);
+const timestamp = value => typeof value === 'string' && /(?:Z|[+-]\d{2}:\d{2})$/.test(value) && Number.isFinite(Date.parse(value));
+
+function applySnapshot(game) {
+  const row = game && snapshots.get(key(game.frontEndId, game.kickOffTime));
+  if (!row) {
+    xgStatus.textContent = game ? '呢場未有已核對嘅 xG 快照，可以匯入或手填。' : '揀場後會檢查有冇可用嘅 xG 快照。';
+    return;
+  }
+  for (const field of fields) match.elements[field].value = field === 'cutoff' ? inputTime(row.cutoff) : row[field];
+  xgStatus.textContent = '已帶入 ' + row.source + ' · 截數 ' + hkt(row.cutoff) + ' HKT';
+  match.dispatchEvent(new Event('input'));
+}
+
+document.querySelector('#xg-file').onchange = async event => {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const { fixtures } = JSON.parse(await file.text());
+    if (!Array.isArray(fixtures) || !fixtures.length) throw Error();
+    const next = new Map();
+    for (const row of fixtures) {
+      if (!row || typeof row.match !== 'string' || !/^FB\d+$/.test(row.match) ||
+          !timestamp(row.kickoff) || !timestamp(row.cutoff) || Date.parse(row.cutoff) >= Date.parse(row.kickoff) ||
+          Date.parse(row.cutoff) > Date.now() ||
+          typeof row.source !== 'string' || !row.source.trim() ||
+          !['hx','ha','ax','aa'].every(field => Number.isFinite(row[field]) && row[field] >= 0 && row[field] <= 10) ||
+          !['hn','an'].every(field => Number.isSafeInteger(row[field]) && row[field] > 0)) throw Error();
+      const id = key(row.match, row.kickoff);
+      if (next.has(id)) throw Error();
+      next.set(id, row);
+    }
+    snapshots = next;
+    const game = matches.get(fixture.value);
+    if (game) {
+      for (const field of fields) match.elements[field].value = '';
+      match.dispatchEvent(new Event('input'));
+      applySnapshot(game);
+    } else {
+      xgStatus.textContent = '已匯入 ' + snapshots.size + ' 場，請選擇賽事。';
+    }
+  } catch {
+    xgStatus.textContent = '匯入失敗。請檢查場次、時間、樣本同 xG 欄位。';
+  }
+};
 
 function clearQuote() {
   for (const field of ['line', 'odds', 'quoted']) match.elements[field].value = '';
@@ -59,10 +107,11 @@ function selectFixture() {
 
 fixture.onchange = () => {
   const game = matches.get(fixture.value);
-  for (const field of ['hx', 'ha', 'ax', 'aa', 'hn', 'an', 'source', 'cutoff']) match.elements[field].value = '';
+  for (const field of fields) match.elements[field].value = '';
   match.elements.kickoff.value = game ? inputTime(game.kickOffTime) : '';
   clearQuote();
   selectFixture();
+  applySnapshot(game);
 };
 quote.onchange = () => {
   clearQuote();
@@ -76,6 +125,7 @@ quote.onchange = () => {
 document.querySelector('#demo').addEventListener('click', () => {
   fixture.value = '';
   selectFixture();
+  applySnapshot();
 });
 
 async function load() {
