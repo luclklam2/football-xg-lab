@@ -1,3 +1,4 @@
+import { updateGoals } from './goals.mjs';
 import query from './hkjc-query.mjs';
 
 const endpoint = 'https://info.cld.hkjc.com/graphql/base/';
@@ -112,6 +113,7 @@ fixture.onchange = () => {
   clearQuote();
   selectFixture();
   applySnapshot(game);
+  updateGoals(game);
 };
 quote.onchange = () => {
   clearQuote();
@@ -126,6 +128,7 @@ document.querySelector('#demo').addEventListener('click', () => {
   fixture.value = '';
   selectFixture();
   applySnapshot();
+  updateGoals();
 });
 
 async function load() {
@@ -168,6 +171,7 @@ async function load() {
     if (selected) match.elements.kickoff.value = fixture.value ? inputTime(matches.get(selected).kickOffTime) : '';
     fixture.disabled = !matches.size;
     selectFixture();
+    updateGoals(matches.get(fixture.value));
     status.textContent = days.join(' ／ ') + ' · ' + (matches.size ? matches.size + ' 場未開波' : '暫無未開波賽事') +
       ' · 讀取時間 ' + hkt(now) + ' HKT';
   } catch {

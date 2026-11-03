@@ -6,7 +6,7 @@
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f0f3ed;color:#173228;font:1rem/1.6 system-ui,sans-serif}header{background:#173228;color:#fff;padding:2rem max(1rem,calc((100% - 65rem)/2))}h1,h2{line-height:1.2}header p{margin-bottom:0}main{max-width:67rem;margin:auto;padding:1rem}section{background:white;border:1px solid #cbd8cf;padding:1rem;margin-bottom:1rem}fieldset{min-width:0;border:1px solid #cbd8cf;margin:0;padding:.75rem}label{display:block;margin:.5rem 0}input,select,button{font:inherit;padding:.45rem;max-width:100%;border:1px solid #667e72;border-radius:.25rem}input:not([type=file]),select{display:block;width:100%}button{background:#173228;color:white;cursor:pointer;margin:.75rem .5rem 0 0}a{color:#175c44}.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr))}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#eaf1eb;padding:1rem}code{overflow-wrap:anywhere}
 </style>
-<header><small>賽前分析工作台 / v1.2</small><h1>Football xG Lab</h1><p>主客 xG、比分分布、指定盤口同歷史回測。</p></header>
+<header><small>賽前分析工作台 / v1.3</small><h1>Football xG Lab</h1><p>主客 xG、比分分布、指定盤口同歷史回測。</p></header>
 <main>
 <section><h2>馬會今明賽事</h2>
 <p>按香港日期篩選。揀場可帶入開波時間，再揀大細或亞洲讓球報價。匯入 xG 快照後，揀場會自動填入已配對嘅統計。</p>
@@ -24,6 +24,11 @@
 </details>
 <p id="xg-status" role="status">揀場後會檢查有冇可用嘅 xG 快照。</p>
 <p><a href="https://bet.hkjc.com/ch/football/home">馬會足球賽事來源</a></p>
+</section>
+<section><h2>場均得失球模式</h2>
+<p>揀場即時計算。試點支援英超、英冠、英甲同英乙，使用同球季已收錄嘅主場／作客完場賽果。結果同下方 xG 模式分開。</p>
+<pre id="goals-result" aria-live="polite">請先揀馬會賽事。</pre>
+<a href="https://github.com/openfootball/football.json">賽果來源 OpenFootball</a>
 </section>
 <section><h2>01　單場分析</h2>
 <p>用同一來源同統計口徑，填主場及作客場均數據。時間以香港時間輸入。</p>
