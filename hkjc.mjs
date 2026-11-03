@@ -1,4 +1,4 @@
-import { updateGoals } from './goals.mjs';
+import { updateGoals } from './goals.mjs?v=1.3.1';
 import query from './hkjc-query.mjs';
 
 const endpoint = 'https://info.cld.hkjc.com/graphql/base/';
